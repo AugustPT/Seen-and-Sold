@@ -1106,6 +1106,13 @@ textarea:focus::before, #search:focus::before {
 
     <!-- Tab 2: Configure variables view -->
     <section class="tab-view" id="view-variables">
+      <!-- iOS Back Navigation Bar -->
+      <div style="padding: 0 0 12px; display: flex; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.04); background: rgba(255, 255, 255, 0.01); margin-bottom: 16px; margin-left: -20px; margin-right: -20px; padding-left: 20px;">
+        <button id="backToTemplatesFromConfigBtn" style="background: transparent; border: none; color: var(--accent-gold); font-family: var(--font-sans); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 4px 8px 4px 0;">
+          <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+          Back to Templates
+        </button>
+      </div>
       <div class="variables-progress-container">
         <div class="progress-header">
           <span id="variablesProgressText">0 of 7 variables configured</span>
@@ -1161,6 +1168,13 @@ textarea:focus::before, #search:focus::before {
 
     <!-- Tab 3: Prompt preview & action view -->
     <section class="tab-view" id="view-prompt">
+      <!-- iOS Back Navigation Bar -->
+      <div style="padding: 0 0 12px; display: flex; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.04); background: rgba(255, 255, 255, 0.01); margin-bottom: 16px; margin-left: -20px; margin-right: -20px; padding-left: 20px;">
+        <button id="backToTemplatesFromCompileBtn" style="background: transparent; border: none; color: var(--accent-gold); font-family: var(--font-sans); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 4px 8px 4px 0;">
+          <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+          Back to Templates
+        </button>
+      </div>
       <div class="output-meta">
         <span class="meta-path" id="path">Category → Option → Use Case</span>
       </div>
@@ -1363,6 +1377,8 @@ const categoriesMenuView = document.getElementById('categoriesMenuView');
 const templatesDetailView = document.getElementById('templatesDetailView');
 const backToMenuBtn = document.getElementById('backToMenuBtn');
 const autofillDemoBtn = document.getElementById('autofillDemoBtn');
+const backToTemplatesFromCompileBtn = document.getElementById('backToTemplatesFromCompileBtn');
+const backToTemplatesFromConfigBtn = document.getElementById('backToTemplatesFromConfigBtn');
 const subcategoryPills = document.getElementById('subcategoryPills');
 const templateList = document.getElementById('templateList');
 const promptEl = document.getElementById('prompt');
@@ -1431,6 +1447,22 @@ backToMenuBtn.onclick = () => {
 };
 backToMenuBtn.addEventListener('mousemove', e => handleSpotlight(e, backToMenuBtn));
 backToMenuBtn.addEventListener('touchmove', e => handleSpotlight(e, backToMenuBtn));
+
+backToTemplatesFromCompileBtn.onclick = () => {
+  tabButtons[0].click();
+  browseViewMode = 'templates-list';
+  updateBrowseViewMode();
+};
+backToTemplatesFromCompileBtn.addEventListener('mousemove', e => handleSpotlight(e, backToTemplatesFromCompileBtn));
+backToTemplatesFromCompileBtn.addEventListener('touchmove', e => handleSpotlight(e, backToTemplatesFromCompileBtn));
+
+backToTemplatesFromConfigBtn.onclick = () => {
+  tabButtons[0].click();
+  browseViewMode = 'templates-list';
+  updateBrowseViewMode();
+};
+backToTemplatesFromConfigBtn.addEventListener('mousemove', e => handleSpotlight(e, backToTemplatesFromConfigBtn));
+backToTemplatesFromConfigBtn.addEventListener('touchmove', e => handleSpotlight(e, backToTemplatesFromConfigBtn));
 
 function handleSpotlight(e, el) {
   const rect = el.getBoundingClientRect();
