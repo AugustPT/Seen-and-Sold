@@ -830,7 +830,107 @@ textarea:focus::before, #search:focus::before {
   opacity: 1;
 }
 
-/* Categories Main Menu Layout */
+/* Goal Menu Layout */
+.goal-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.goal-menu-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.005) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 20px;
+  padding: 18px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.goal-menu-card:active {
+  background: rgba(255, 255, 255, 0.06);
+  transform: scale(0.97);
+}
+
+.goal-menu-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-grow: 1;
+  padding-right: 12px;
+}
+
+.goal-menu-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.goal-menu-card-icon {
+  font-size: 20px;
+}
+
+.goal-menu-card-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.goal-menu-card-desc {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.goal-menu-card-meta {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-gold);
+}
+
+.goal-menu-card .chevron {
+  width: 18px;
+  height: 18px;
+  fill: var(--accent-gold);
+  transition: transform 0.2s ease;
+}
+
+.goal-menu-card:active .chevron {
+  transform: translateX(3px);
+}
+
+.goal-menu-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    120px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
+    rgba(217, 184, 111, 0.25),
+    transparent 80%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.goal-menu-card:hover::before {
+  opacity: 1;
+}
+
+/* Category menu styling */
 .category-menu-list {
   display: flex;
   flex-direction: column;
@@ -871,7 +971,7 @@ textarea:focus::before, #search:focus::before {
 }
 
 .category-menu-card-meta {
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--text-muted);
 }
 
@@ -886,7 +986,6 @@ textarea:focus::before, #search:focus::before {
   transform: translateX(2px);
 }
 
-/* Back to Categories spotlight */
 .category-menu-card::before {
   content: "";
   position: absolute;
@@ -936,18 +1035,47 @@ textarea:focus::before, #search:focus::before {
     
     <!-- Tab 1: Templates View -->
     <section class="tab-view active" id="view-templates" style="padding: 16px 0 84px;">
-      <!-- Main Menu (Categories List) -->
-      <div id="categoriesMenuView">
+      
+      <!-- 1. Goals Menu (Super-Categories) -->
+      <div id="goalsMenuView">
         <div style="padding: 0 20px 14px;">
-          <div class="section-label">Main Menu</div>
-          <h2 style="font-family: var(--font-display); font-size: 20px; font-weight: 800; margin-top: 4px;">Choose a Category</h2>
+          <div class="section-label">Immediate Goals</div>
+          <h2 style="font-family: var(--font-display); font-size: 20px; font-weight: 800; margin-top: 4px;">What are you trying to do?</h2>
+        </div>
+        
+        <!-- Quick Start Row -->
+        <div style="padding: 0 20px 16px;">
+          <div class="section-label" style="margin-bottom: 8px;">Quick Start</div>
+          <div class="horizontal-scroll-row" id="quickStartPills">
+            <!-- Dynamic quick start pills -->
+          </div>
+        </div>
+
+        <div class="goal-menu-list" id="goalMenuList" style="padding: 0 20px; display: flex; flex-direction: column; gap: 12px;">
+          <!-- 4 Golden Path Cards -->
+        </div>
+      </div>
+
+      <!-- 2. Categories Menu (List of categories for active goal) -->
+      <div id="categoriesMenuView" style="display: none;">
+        <!-- Back Navigation to Goals -->
+        <div style="padding: 0 20px 12px; display: flex; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.04); background: rgba(255, 255, 255, 0.01); margin-bottom: 16px;">
+          <button id="backToGoalsBtn" style="background: transparent; border: none; color: var(--accent-gold); font-family: var(--font-sans); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 4px 8px 4px 0;">
+            <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+            Back to Goals
+          </button>
+        </div>
+
+        <div style="padding: 0 20px 14px;">
+          <div class="section-label" id="activeGoalLabel" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Goal Name</div>
+          <h2 style="font-family: var(--font-display); font-size: 20px; font-weight: 800; margin-top: 4px;">Select a Category</h2>
         </div>
         <div class="category-menu-list" id="categoryMenuList" style="padding: 0 20px;"></div>
       </div>
 
-      <!-- Subcategories & Templates Detail View -->
+      <!-- 3. Templates Detail View (Subcategories & Templates) -->
       <div id="templatesDetailView" style="display: none;">
-        <!-- iOS Back Navigation Bar -->
+        <!-- Back Navigation to Categories -->
         <div style="padding: 0 20px 12px; display: flex; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.04); background: rgba(255, 255, 255, 0.01); margin-bottom: 16px;">
           <button id="backToMenuBtn" style="background: transparent; border: none; color: var(--accent-gold); font-family: var(--font-sans); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 4px 8px 4px 0;">
             <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
@@ -985,7 +1113,12 @@ textarea:focus::before, #search:focus::before {
       </div>
 
       <div class="pane-section">
-        <div class="section-label">Configure Prompt Fields</div>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <div class="section-label" style="margin: 0;">Configure Prompt Fields</div>
+          <button id="autofillDemoBtn" style="background: rgba(217, 184, 111, 0.08); border: 1px solid rgba(217, 184, 111, 0.2); color: var(--accent-gold); font-family: var(--font-sans); font-size: 11px; font-weight: 600; padding: 6px 12px; border-radius: 99px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+            ✨ Autofill Demo
+          </button>
+        </div>
         <div class="variables-grid">
           <div class="input-group">
             <label for="BUSINESS_OR_PRODUCT">Business or Product</label>
@@ -1119,11 +1252,82 @@ let currentCat = '';
 let currentSub = '';
 let currentTemp = '';
 
-let browseViewMode = 'categories-menu'; // 'categories-menu' or 'templates-list'
+let browseViewMode = 'goals-menu'; // 'goals-menu', 'categories-menu', or 'templates-list'
+let activeGoal = '';
+
+const SUPER_CATEGORIES = {
+  "Grow Audience & Content": {
+    "icon": "📱",
+    "desc": "Design social media templates, campaigns, banners, and viral hooks.",
+    "cats": [
+      "Social Media Content",
+      "Social Content & Distribution",
+      "Explain & Educate",
+      "Storytelling & Narrative Visuals",
+      "Text-Heavy, Multilingual & Localization"
+    ]
+  },
+  "Sell Offers & Conversions": {
+    "icon": "💰",
+    "desc": "Drive clicks, sales, and booked calls with high-converting ads and sales copy.",
+    "cats": [
+      "Sales & Offers",
+      "Personalized Outreach",
+      "Websites & Landing Pages",
+      "Product & E-commerce",
+      "Local Business Upgrades",
+      "Real Estate & Property",
+      "Restaurants, Food & Hospitality",
+      "Wellness, Beauty & Health",
+      "Events, Workshops & Print",
+      "Trust, Proof & Credibility",
+      "Premium Buyer Targeting"
+    ]
+  },
+  "Launch Ideas & Pitch Decks": {
+    "icon": "💡",
+    "desc": "Create mockups, MVP renders, and investor pitch deck slides to fund your vision.",
+    "cats": [
+      "Proof Before Build",
+      "Startups & Software",
+      "Investor & Pitch Deck",
+      "Physical World Assets",
+      "Brand Direction & Premium Positioning"
+    ]
+  },
+  "Systems & AI Automation": {
+    "icon": "⚙️",
+    "desc": "Document processes with visual SOP flowcharts and refine raw screenshots in batch.",
+    "cats": [
+      "Training, SOPs & Operations",
+      "AI, Automation & Systems",
+      "Agency & Client Delivery",
+      "Productized Thinking & IP",
+      "Image Editing & Asset Repair",
+      "Advanced What It Can Really Do"
+    ]
+  }
+};
+
+const demoData = {
+  "BUSINESS_OR_PRODUCT": "Aura Coffee - Premium Organic Cold Brew",
+  "BUYER": "Busy urban professionals who appreciate craft coffee and clean aesthetics",
+  "SOURCE": "Glass bottle with single-origin roast details and gold-foil label logo",
+  "WEAK_POINT": "Social media photos look generic and fail to communicate our premium price point",
+  "DESIRED_RESULT": "Moody, high-status cold brew bottle shot surrounded by raw coffee beans and soft backlighting",
+  "STYLE": "Minimalist dark-mode studio photography, glassmorphic highlights, rich wooden textures",
+  "CONSTRAINTS": "Must show the single glass bottle, keep branding visible, no cartoon illustrations"
+};
+
+const goalMenuList = document.getElementById('goalMenuList');
+const goalsMenuView = document.getElementById('goalsMenuView');
+const backToGoalsBtn = document.getElementById('backToGoalsBtn');
+const quickStartPills = document.getElementById('quickStartPills');
 const categoryMenuList = document.getElementById('categoryMenuList');
 const categoriesMenuView = document.getElementById('categoriesMenuView');
 const templatesDetailView = document.getElementById('templatesDetailView');
 const backToMenuBtn = document.getElementById('backToMenuBtn');
+const autofillDemoBtn = document.getElementById('autofillDemoBtn');
 const subcategoryPills = document.getElementById('subcategoryPills');
 const templateList = document.getElementById('templateList');
 const promptEl = document.getElementById('prompt');
@@ -1159,9 +1363,13 @@ tabButtons.forEach(btn => {
   btn.onclick = () => {
     const tabId = btn.dataset.tab;
     
-    // If clicking on Browse tab while already active, go back to main menu
+    // Active tab click acts as breadcrumb back-navigation
     if (tabId === 'view-templates' && btn.classList.contains('active')) {
-      browseViewMode = 'categories-menu';
+      if (browseViewMode === 'templates-list') {
+        browseViewMode = 'categories-menu';
+      } else if (browseViewMode === 'categories-menu') {
+        browseViewMode = 'goals-menu';
+      }
       updateBrowseViewMode();
       return;
     }
@@ -1174,7 +1382,14 @@ tabButtons.forEach(btn => {
   };
 });
 
-// Back button setup
+// Back buttons setup
+backToGoalsBtn.onclick = () => {
+  browseViewMode = 'goals-menu';
+  updateBrowseViewMode();
+};
+backToGoalsBtn.addEventListener('mousemove', e => handleSpotlight(e, backToGoalsBtn));
+backToGoalsBtn.addEventListener('touchmove', e => handleSpotlight(e, backToGoalsBtn));
+
 backToMenuBtn.onclick = () => {
   browseViewMode = 'categories-menu';
   updateBrowseViewMode();
@@ -1239,15 +1454,106 @@ function init() {
   currentSub = Object.keys(categories[currentCat])[0];
   currentTemp = Object.keys(categories[currentCat][currentSub])[0];
   
-  browseViewMode = 'categories-menu';
+  browseViewMode = 'goals-menu';
   updateBrowseViewMode();
+  renderQuickStart();
   renderPrompt();
   updateVariablesProgress();
+  
+  // Set up Autofill button handler
+  autofillDemoBtn.onclick = () => {
+    fields.forEach(f => {
+      document.getElementById(f).value = demoData[f] || '';
+    });
+    updateVariablesProgress();
+    renderPrompt();
+    
+    // Animate autofill success visually on the button
+    const originalText = autofillDemoBtn.textContent;
+    autofillDemoBtn.textContent = '⚡ Filled!';
+    autofillDemoBtn.style.borderColor = 'var(--success-color)';
+    autofillDemoBtn.style.color = 'var(--success-color)';
+    setTimeout(() => {
+      autofillDemoBtn.textContent = originalText;
+      autofillDemoBtn.style.borderColor = 'rgba(217, 184, 111, 0.2)';
+      autofillDemoBtn.style.color = 'var(--accent-gold)';
+    }, 1500);
+  };
+}
+
+function renderGoalsMenu() {
+  goalMenuList.innerHTML = '';
+  Object.keys(SUPER_CATEGORIES).forEach(goalName => {
+    const g = SUPER_CATEGORIES[goalName];
+    const card = document.createElement('div');
+    card.className = 'goal-menu-card';
+    
+    // Count categories and templates under this Goal
+    const catCount = g.cats.length;
+    let tempCountTotal = 0;
+    g.cats.forEach(cat => {
+      if (categories[cat]) {
+        Object.values(categories[cat]).forEach(sub => tempCountTotal += Object.keys(sub).length);
+      }
+    });
+    
+    const contentEl = document.createElement('div');
+    contentEl.className = 'goal-menu-card-content';
+    
+    const headerEl = document.createElement('div');
+    headerEl.className = 'goal-menu-card-header';
+    
+    const iconEl = document.createElement('span');
+    iconEl.className = 'goal-menu-card-icon';
+    iconEl.textContent = g.icon;
+    
+    const titleEl = document.createElement('span');
+    titleEl.className = 'goal-menu-card-title';
+    titleEl.textContent = goalName;
+    
+    headerEl.appendChild(iconEl);
+    headerEl.appendChild(titleEl);
+    
+    const descEl = document.createElement('div');
+    descEl.className = 'goal-menu-card-desc';
+    descEl.textContent = g.desc;
+    
+    const metaEl = document.createElement('div');
+    metaEl.className = 'goal-menu-card-meta';
+    metaEl.textContent = `${catCount} categories • ${tempCountTotal} templates`;
+    
+    contentEl.appendChild(headerEl);
+    contentEl.appendChild(descEl);
+    contentEl.appendChild(metaEl);
+    
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("class", "chevron");
+    svg.innerHTML = '<path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>';
+    
+    card.appendChild(contentEl);
+    card.appendChild(svg);
+    
+    card.onclick = () => {
+      activeGoal = goalName;
+      browseViewMode = 'categories-menu';
+      updateBrowseViewMode();
+    };
+    
+    card.addEventListener('mousemove', e => handleSpotlight(e, card));
+    card.addEventListener('touchmove', e => handleSpotlight(e, card));
+    
+    goalMenuList.appendChild(card);
+  });
 }
 
 function renderCategoryMenu() {
   categoryMenuList.innerHTML = '';
-  Object.keys(categories).forEach(cat => {
+  const g = SUPER_CATEGORIES[activeGoal];
+  if (!g) return;
+  
+  g.cats.forEach(cat => {
+    if (!categories[cat]) return;
     const card = document.createElement('div');
     card.className = 'category-menu-card';
     
@@ -1296,14 +1602,50 @@ function renderCategoryMenu() {
   });
 }
 
+function renderQuickStart() {
+  quickStartPills.innerHTML = '';
+  
+  // High-value popular templates shortcuts
+  const popular = [
+    { label: "Premium Buyer Map", cat: "Premium Buyer Targeting", sub: "Find who pays", name: "Premium buyer map" },
+    { label: "LinkedIn Post", cat: "Social Media Content", sub: "LinkedIn", name: "LinkedIn Post Automation" },
+    { label: "Instagram Grid", cat: "Social Media Content", sub: "Instagram", name: "Automate Instagram Grid & Reels" },
+    { label: "SOP Flowchart", cat: "Training, SOPs & Operations", sub: "Make people follow processes", name: "Visual SOP" },
+    { label: "Product Mockup", cat: "Proof Before Build", sub: "Turn ideas into evidence", name: "Concept product → real-world mockup" }
+  ];
+  
+  popular.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'sub-pill';
+    btn.textContent = p.label;
+    btn.onclick = () => {
+      selectItem(p);
+    };
+    btn.onmousemove = e => handleSpotlight(e, btn);
+    quickStartPills.appendChild(btn);
+  });
+}
+
 function updateBrowseViewMode() {
-  if (browseViewMode === 'categories-menu') {
-    categoriesMenuView.style.display = 'block';
-    templatesDetailView.style.display = 'none';
+  const goalsView = document.getElementById('goalsMenuView');
+  const categoriesView = document.getElementById('categoriesMenuView');
+  const templatesView = document.getElementById('templatesDetailView');
+  
+  if (browseViewMode === 'goals-menu') {
+    goalsView.style.display = 'block';
+    categoriesView.style.display = 'none';
+    templatesView.style.display = 'none';
+    renderGoalsMenu();
+  } else if (browseViewMode === 'categories-menu') {
+    goalsView.style.display = 'none';
+    categoriesView.style.display = 'block';
+    templatesView.style.display = 'none';
+    document.getElementById('activeGoalLabel').textContent = activeGoal;
     renderCategoryMenu();
   } else {
-    categoriesMenuView.style.display = 'none';
-    templatesDetailView.style.display = 'block';
+    goalsView.style.display = 'none';
+    categoriesView.style.display = 'none';
+    templatesView.style.display = 'block';
     document.getElementById('activeCategoryLabel').textContent = currentCat;
   }
 }
@@ -1451,6 +1793,9 @@ function selectItem(item) {
   currentCat = item.cat;
   currentSub = item.sub;
   currentTemp = item.name;
+  
+  // Find which super-category contains this category
+  activeGoal = Object.keys(SUPER_CATEGORIES).find(g => SUPER_CATEGORIES[g].cats.includes(item.cat)) || Object.keys(SUPER_CATEGORIES)[0];
   
   browseViewMode = 'templates-list';
   updateBrowseViewMode();
