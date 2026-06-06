@@ -829,6 +829,87 @@ textarea:hover::before, #search:hover::before {
 textarea:focus::before, #search:focus::before {
   opacity: 1;
 }
+
+/* Categories Main Menu Layout */
+.category-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category-menu-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.category-menu-card:active {
+  background: rgba(255, 255, 255, 0.06);
+  transform: scale(0.98);
+}
+
+.category-menu-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-grow: 1;
+}
+
+.category-menu-card-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.category-menu-card-meta {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.category-menu-card .chevron {
+  width: 16px;
+  height: 16px;
+  fill: var(--accent-gold);
+  transition: transform 0.2s ease;
+}
+
+.category-menu-card:active .chevron {
+  transform: translateX(2px);
+}
+
+/* Back to Categories spotlight */
+.category-menu-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    100px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
+    rgba(217, 184, 111, 0.22),
+    transparent 80%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.category-menu-card:hover::before {
+  opacity: 1;
+}
 </style>
 </head>
 <body>
@@ -854,20 +935,41 @@ textarea:focus::before, #search:focus::before {
   <main class="tab-views-container">
     
     <!-- Tab 1: Templates View -->
-    <section class="tab-view active" id="view-templates">
-      <div class="pane-section">
-        <div class="section-label">1. Choose Category</div>
-        <div class="horizontal-scroll-row" id="categoryTabs"></div>
+    <section class="tab-view active" id="view-templates" style="padding: 16px 0 84px;">
+      <!-- Main Menu (Categories List) -->
+      <div id="categoriesMenuView">
+        <div style="padding: 0 20px 14px;">
+          <div class="section-label">Main Menu</div>
+          <h2 style="font-family: var(--font-display); font-size: 20px; font-weight: 800; margin-top: 4px;">Choose a Category</h2>
+        </div>
+        <div class="category-menu-list" id="categoryMenuList" style="padding: 0 20px;"></div>
       </div>
-      
-      <div class="pane-section">
-        <div class="section-label">2. Narrow Options</div>
-        <div class="horizontal-scroll-row" id="subcategoryPills"></div>
-      </div>
-      
-      <div class="pane-section">
-        <div class="section-label">3. Select Use Case</div>
-        <div class="template-list" id="templateList"></div>
+
+      <!-- Subcategories & Templates Detail View -->
+      <div id="templatesDetailView" style="display: none;">
+        <!-- iOS Back Navigation Bar -->
+        <div style="padding: 0 20px 12px; display: flex; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.04); background: rgba(255, 255, 255, 0.01); margin-bottom: 16px;">
+          <button id="backToMenuBtn" style="background: transparent; border: none; color: var(--accent-gold); font-family: var(--font-sans); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 4px 8px 4px 0;">
+            <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+            Back to Categories
+          </button>
+        </div>
+
+        <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 18px;">
+          <div class="pane-section">
+            <div class="section-label" id="activeCategoryLabel" style="font-size: 13px; color: var(--accent-gold); font-weight: 700; text-transform: none; letter-spacing: normal;">Category Name</div>
+          </div>
+          
+          <div class="pane-section">
+            <div class="section-label">1. Narrow Options</div>
+            <div class="horizontal-scroll-row" id="subcategoryPills"></div>
+          </div>
+          
+          <div class="pane-section">
+            <div class="section-label">2. Select Use Case</div>
+            <div class="template-list" id="templateList"></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1017,7 +1119,11 @@ let currentCat = '';
 let currentSub = '';
 let currentTemp = '';
 
-const categoryTabs = document.getElementById('categoryTabs');
+let browseViewMode = 'categories-menu'; // 'categories-menu' or 'templates-list'
+const categoryMenuList = document.getElementById('categoryMenuList');
+const categoriesMenuView = document.getElementById('categoriesMenuView');
+const templatesDetailView = document.getElementById('templatesDetailView');
+const backToMenuBtn = document.getElementById('backToMenuBtn');
 const subcategoryPills = document.getElementById('subcategoryPills');
 const templateList = document.getElementById('templateList');
 const promptEl = document.getElementById('prompt');
@@ -1052,6 +1158,14 @@ const tabViews = document.querySelectorAll('.tab-view');
 tabButtons.forEach(btn => {
   btn.onclick = () => {
     const tabId = btn.dataset.tab;
+    
+    // If clicking on Browse tab while already active, go back to main menu
+    if (tabId === 'view-templates' && btn.classList.contains('active')) {
+      browseViewMode = 'categories-menu';
+      updateBrowseViewMode();
+      return;
+    }
+    
     tabButtons.forEach(b => b.classList.remove('active'));
     tabViews.forEach(v => v.classList.remove('active'));
     
@@ -1059,6 +1173,14 @@ tabButtons.forEach(btn => {
     document.getElementById(tabId).classList.add('active');
   };
 });
+
+// Back button setup
+backToMenuBtn.onclick = () => {
+  browseViewMode = 'categories-menu';
+  updateBrowseViewMode();
+};
+backToMenuBtn.addEventListener('mousemove', e => handleSpotlight(e, backToMenuBtn));
+backToMenuBtn.addEventListener('touchmove', e => handleSpotlight(e, backToMenuBtn));
 
 function handleSpotlight(e, el) {
   const rect = el.getBoundingClientRect();
@@ -1117,31 +1239,73 @@ function init() {
   currentSub = Object.keys(categories[currentCat])[0];
   currentTemp = Object.keys(categories[currentCat][currentSub])[0];
   
-  renderCategories();
-  renderSubcategories();
-  renderTemplates();
+  browseViewMode = 'categories-menu';
+  updateBrowseViewMode();
   renderPrompt();
   updateVariablesProgress();
 }
 
-function renderCategories() {
-  categoryTabs.innerHTML = '';
+function renderCategoryMenu() {
+  categoryMenuList.innerHTML = '';
   Object.keys(categories).forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'cat-tab' + (cat === currentCat ? ' active' : '');
-    btn.textContent = cat;
-    btn.onclick = () => {
+    const card = document.createElement('div');
+    card.className = 'category-menu-card';
+    
+    let tCount = 0;
+    Object.values(categories[cat]).forEach(sub => tCount += Object.keys(sub).length);
+    
+    const textEl = document.createElement('div');
+    textEl.className = 'category-menu-card-text';
+    
+    const nameEl = document.createElement('div');
+    nameEl.className = 'category-menu-card-name';
+    nameEl.textContent = cat;
+    
+    const metaEl = document.createElement('div');
+    metaEl.className = 'category-menu-card-meta';
+    metaEl.textContent = `${Object.keys(categories[cat]).length} subcategories • ${tCount} templates`;
+    
+    textEl.appendChild(nameEl);
+    textEl.appendChild(metaEl);
+    
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("class", "chevron");
+    svg.innerHTML = '<path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>';
+    
+    card.appendChild(textEl);
+    card.appendChild(svg);
+    
+    card.onclick = () => {
       currentCat = cat;
       currentSub = Object.keys(categories[cat])[0];
       currentTemp = Object.keys(categories[cat][currentSub])[0];
-      renderCategories();
+      
+      browseViewMode = 'templates-list';
+      updateBrowseViewMode();
+      
       renderSubcategories();
       renderTemplates();
       renderPrompt();
     };
-    btn.onmousemove = e => handleSpotlight(e, btn);
-    categoryTabs.appendChild(btn);
+    
+    card.addEventListener('mousemove', e => handleSpotlight(e, card));
+    card.addEventListener('touchmove', e => handleSpotlight(e, card));
+    
+    categoryMenuList.appendChild(card);
   });
+}
+
+function updateBrowseViewMode() {
+  if (browseViewMode === 'categories-menu') {
+    categoriesMenuView.style.display = 'block';
+    templatesDetailView.style.display = 'none';
+    renderCategoryMenu();
+  } else {
+    categoriesMenuView.style.display = 'none';
+    templatesDetailView.style.display = 'block';
+    document.getElementById('activeCategoryLabel').textContent = currentCat;
+  }
 }
 
 function renderSubcategories() {
@@ -1288,7 +1452,9 @@ function selectItem(item) {
   currentSub = item.sub;
   currentTemp = item.name;
   
-  renderCategories();
+  browseViewMode = 'templates-list';
+  updateBrowseViewMode();
+  
   renderSubcategories();
   renderTemplates();
   renderPrompt();
