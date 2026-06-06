@@ -971,8 +971,11 @@ textarea:focus::before, #search:focus::before {
 }
 
 .category-menu-card-meta {
-  font-size: 11px;
-  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-gold);
 }
 
 .category-menu-card .chevron {
@@ -1281,6 +1284,7 @@ const SUPER_CATEGORIES = {
       "Wellness, Beauty & Health",
       "Events, Workshops & Print",
       "Trust, Proof & Credibility",
+      "Nonprofit, Church & Community",
       "Premium Buyer Targeting"
     ]
   },
@@ -1307,6 +1311,37 @@ const SUPER_CATEGORIES = {
       "Advanced What It Can Really Do"
     ]
   }
+};
+
+const CATEGORY_DESCRIPTIONS = {
+  "Social Media Content": "Build native posts, scripts, and covers for FB, IG, TikTok, X, LinkedIn, and Pinterest.",
+  "Social Content & Distribution": "Design viral YouTube thumbnails, carousels, meme ideas, and daily campaign sets.",
+  "Explain & Educate": "Explain complex concepts, workflows, and ideas with simple visual analogies.",
+  "Storytelling & Narrative Visuals": "Create emotional story arcs and visual metaphors that connect with readers.",
+  "Text-Heavy, Multilingual & Localization": "Translate text into high-contrast visual quotes and localized layouts.",
+  "Sales & Offers": "Design high-converting ads, premium product packages, and risk-reversal guarantee graphics.",
+  "Personalized Outreach": "Send customized cold/warm visual pitches and proof of value to specific prospects.",
+  "Websites & Landing Pages": "Design landing page hero sections, feature grids, and full-page layout drafts.",
+  "Product & E-commerce": "Produce clean catalog renders, packaging designs, and buy-box graphics.",
+  "Local Business Upgrades": "Elevate physical services, walk-in appointment offers, and local retail layouts.",
+  "Real Estate & Property": "Design beautiful real estate floor plans, property maps, and architectural renders.",
+  "Restaurants, Food & Hospitality": "Create appetizing menus, tourism experience visuals, and hospitality flyers.",
+  "Wellness, Beauty & Health": "Design clean trust-building visuals and treatment clarity graphics.",
+  "Events, Workshops & Print": "Generate flyers, posters, and tickets to get physical attendance for your events.",
+  "Trust, Proof & Credibility": "Build social proof, review highlights, and case study authority cards.",
+  "Premium Buyer Targeting": "Locate high-value buyers and map luxury positioning assets.",
+  "Nonprofit, Church & Community": "Generate cause-oriented fundraising graphics and community outreach posters.",
+  "Proof Before Build": "Turn raw ideas and voice notes into believable product mockups and pre-sells.",
+  "Startups & Software": "Create SaaS dashboards, mobile interfaces, and growth roadmap diagrams.",
+  "Investor & Pitch Deck": "Structure core slides and high-status charts for funding pitches.",
+  "Physical World Assets": "Design real-world packaging, merch, books, signage, and physical goods.",
+  "Brand Direction & Premium Positioning": "Build brand style guides, premium mood boards, and aesthetic direction sets.",
+  "Training, SOPs & Operations": "Create step-by-step visual SOPs and training materials to align your team.",
+  "AI, Automation & Systems": "Map out complex automated flows, database structures, and system diagrams.",
+  "Agency & Client Delivery": "Deliver visual client report card layouts and onboarding roadmaps faster.",
+  "Productized Thinking & IP": "Package knowledge assets and proprietary frameworks into visual products.",
+  "Image Editing & Asset Repair": "Fix low-contrast images, clean up busy backgrounds, and patch visual mistakes.",
+  "Advanced What It Can Really Do": "Explore complex multi-layered prompts and advanced visual rendering limits."
 };
 
 const demoData = {
@@ -1567,11 +1602,20 @@ function renderCategoryMenu() {
     nameEl.className = 'category-menu-card-name';
     nameEl.textContent = cat;
     
+    const descEl = document.createElement('div');
+    descEl.className = 'category-menu-card-desc';
+    descEl.style.fontSize = '12px';
+    descEl.style.color = 'var(--text-muted)';
+    descEl.style.lineHeight = '1.35';
+    descEl.style.margin = '2px 0 6px 0';
+    descEl.textContent = CATEGORY_DESCRIPTIONS[cat] || '';
+    
     const metaEl = document.createElement('div');
     metaEl.className = 'category-menu-card-meta';
     metaEl.textContent = `${Object.keys(categories[cat]).length} subcategories • ${tCount} templates`;
     
     textEl.appendChild(nameEl);
+    textEl.appendChild(descEl);
     textEl.appendChild(metaEl);
     
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
