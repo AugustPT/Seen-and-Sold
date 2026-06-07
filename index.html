@@ -1012,6 +1012,79 @@ textarea:focus::before, #search:focus::before {
 .category-menu-card:hover::before {
   opacity: 1;
 }
+
+/* Persona Selector Styles */
+.persona-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.persona-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.persona-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.persona-item.active {
+  background: rgba(217, 184, 111, 0.06);
+  border-color: rgba(217, 184, 111, 0.4);
+  box-shadow: 0 0 12px rgba(217, 184, 111, 0.1);
+}
+.persona-icon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+.persona-item.active .persona-icon {
+  background: rgba(217, 184, 111, 0.15);
+  color: var(--accent-gold);
+}
+.persona-info {
+  flex: 1;
+}
+.persona-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+.persona-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+.persona-radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.persona-item.active .persona-radio {
+  border-color: var(--accent-gold);
+}
+.persona-item.active .persona-radio::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-gold);
+}
 </style>
 </head>
 <body>
@@ -1161,6 +1234,74 @@ textarea:focus::before, #search:focus::before {
         </div>
       </div>
 
+      <!-- Custom Instructions Section -->
+      <div class="pane-section" style="margin-top: 24px;">
+        <div class="section-label" style="margin-bottom: 12px;">System Persona / Custom Instructions</div>
+        <div class="persona-list" id="personaList">
+          <div class="persona-item" data-persona="standard">
+            <div class="persona-icon">✨</div>
+            <div class="persona-info">
+              <div class="persona-name">Standard</div>
+              <div class="persona-desc">Raw template prompt without system wrapping.</div>
+            </div>
+            <div class="persona-radio"></div>
+          </div>
+          <div class="persona-item" data-persona="master">
+            <div class="persona-icon">👑</div>
+            <div class="persona-info">
+              <div class="persona-name">Prompt Master</div>
+              <div class="persona-desc">Strict JSON structure key-value deliverable output.</div>
+            </div>
+            <div class="persona-radio"></div>
+          </div>
+          <div class="persona-item" data-persona="creator">
+            <div class="persona-icon">🧠</div>
+            <div class="persona-info">
+              <div class="persona-name">Expert Prompt Creator</div>
+              <div class="persona-desc">Meta-prompt loop with critique and questions.</div>
+            </div>
+            <div class="persona-radio"></div>
+          </div>
+          <div class="persona-item" data-persona="engineer">
+            <div class="persona-icon">🛠️</div>
+            <div class="persona-info">
+              <div class="persona-name">Prompt Engineer</div>
+              <div class="persona-desc">Iterative refiner for ChatGPT dialog prompting.</div>
+            </div>
+            <div class="persona-radio"></div>
+          </div>
+          <div class="persona-item" data-persona="translation">
+            <div class="persona-icon">🔄</div>
+            <div class="persona-info">
+              <div class="persona-name">Prompt Translation</div>
+              <div class="persona-desc">Dual-mode RAA/TIA focus on intent over syntax.</div>
+            </div>
+            <div class="persona-radio"></div>
+          </div>
+          <div class="persona-item" data-persona="mjgpt">
+            <div class="persona-icon">🎨</div>
+            <div class="persona-info">
+              <div class="persona-name">MJGPT (Midjourney Art)</div>
+              <div class="persona-desc">Art prompt generator assistant for Midjourney.</div>
+            </div>
+            <div class="persona-radio"></div>
+          </div>
+          <div class="persona-item" data-persona="custom">
+            <div class="persona-icon">✍️</div>
+            <div class="persona-info">
+              <div class="persona-name">Custom (Write Your Own)</div>
+              <div class="persona-desc">Apply your own custom system instructions prefix.</div>
+            </div>
+            <div class="persona-radio"></div>
+          </div>
+        </div>
+        
+        <div class="input-group" id="customInstructionsContainer" style="display: none; margin-top: 16px;">
+          <label for="customInstructionsText">Your Custom System Instructions</label>
+          <textarea id="customInstructionsText" placeholder="e.g. Always write in the voice of a professional real estate investor. Keep sentences short and punchy..."></textarea>
+        </div>
+      </div>
+
       <div class="view-actions-footer">
         <button class="btn" id="resetBtn">Reset Variables</button>
       </div>
@@ -1264,6 +1405,67 @@ const BANK = {"_metadata": {"name": "Seen and Sold", "core_goal": "Pick a busine
 
 const categories = BANK.categories;
 const fields = ["BUSINESS_OR_PRODUCT","BUYER","SOURCE","WEAK_POINT","DESIRED_RESULT","STYLE","CONSTRAINTS"];
+
+const PERSONAS = {
+  standard: {
+    name: "Standard",
+    icon: "✨",
+    desc: "Raw template prompt without system wrapping.",
+    wrap: (p) => p
+  },
+  master: {
+    name: "Prompt Master",
+    icon: "👑",
+    desc: "Strict JSON structure key-value deliverable output.",
+    wrap: (p) => `${p}\n\n---\nJSON. Most tooling (APIs, webhooks, n8n, Zapier, SDKs, evals) is built to read/write JSON key-value.\n\nUse this header (no spaces):\n{"title":"","deliverable":"","checks":"","next_step":""}#IfMissing:state_assumptions_and_return_structure\n\nIf braces ever fail, fallback:\ntitle::;deliverable::;checks::;next_step::#IfMissing:state_assumptions_and_return_structure\n\nRemember to drink water.\n\nApple: Return exactly: title: "", deliverable: "", checks: "", next_step: "". If info is missing, state assumptions and still return this structure.\n\nWindows: Return exactly: title | deliverable | checks | next_step. If info is missing, state assumptions and still return this structure.`
+  },
+  creator: {
+    name: "Expert Prompt Creator",
+    icon: "🧠",
+    desc: "Meta-prompt loop with critique and questions.",
+    wrap: (p) => `I want you to become my Expert Prompt Creator. Your goal is to help me craft the best possible prompt for my needs. The prompt you provide should be written from the perspective of me making the request to ChatGPT. Consider in your prompt creation that this prompt will be entered into an interface for GPT3, GPT4, or ChatGPT. The prompt will include instructions to write the output using my communication style. The process is as follows:\n\n**Prompt:**\n${p}\n\n**Critique:**\n{provide a concise paragraph on how to improve the prompt. Be very critical in your response. This section is intended to force constructive criticism even when the prompt is acceptable. Any assumptions and or issues should be included}\n\n**Questions:**\n{ask any questions pertaining to what additional information is needed from me to improve the prompt (max of 3). If the prompt needs more clarification or details in certain areas, ask questions to get more information to include in the prompt}`
+  },
+  engineer: {
+    name: "Prompt Engineer",
+    icon: "🛠️",
+    desc: "Iterative refiner for ChatGPT dialog prompting.",
+    wrap: (p) => `I want you to become my Prompt engineer. Your goal is to help me craft the best possible prompt for my needs. The prompt will be used by you, ChatGPT. You will follow the following process:\n\n1. Your first response will be to ask me what the prompt should be about. I will provide my answer, but we will need to improve it through continual iterations by going through the next steps\n\n2. Based on my input, you will generate 2 sections. a) Revised prompt (provide your rewritten prompt. it should be clear, concise, and easily understood by you, b) Questions (ask any relevant questions pertaining to what additional information is needed from me to improve the prompt).\n\n3. We will continue this iterative process with me providing additional information to you and you updating the prompt in the Revised prompt section until I say we are done.\n\nHere is my initial request:\n${p}`
+  },
+  translation: {
+    name: "Prompt Translation",
+    icon: "🔄",
+    desc: "Dual-mode RAA/TIA focus on intent over syntax.",
+    wrap: (p) => `You are a unified AI system capable of operating in two specialized modes: the Rulebook Acquisition Agent (RAA) and the Technical Interpreter Agent (TIA). Your primary goal is to empower the user to achieve complex technical goals by focusing solely on their high-level intent, not on syntax or technical parameters.\n\nRAA Mode: When the user initiates a request for documentation (e.g., "Find the Rulebook for X"), you switch to RAA mode. Your mandate is to locate the most authoritative, comprehensive, and up-to-date documentation ("The Rulebook") for the specific technical system, model, or API. Use web browsing to find the official source. Your output must facilitate immediate learning for another AI. First, provide the single best URL found for the primary documentation page under the heading 🔍 Found Rulebook Source (For Direct Ingestion/Download). This link is for the user to use for direct TIA browsing or for manual download/upload. Second, provide the full, consolidated plain-text or markdown content that includes all primary parameters/arguments, value ranges, best practices, style guides, and required syntax structure under the heading 📄 Extracted Rulebook Content (For Copy/Paste Learning). If the Rulebook is too vast, provide the Table of Contents and the most critical 500 words on best practices/parameters, clearly instructing the user to use the URL for complete knowledge. Do not attempt to retrieve documents requiring login, payment, or those that are not publicly accessible.\n\nTIA Mode: Once the Rulebook is acquired and you are operating as the user's primary assistant, you switch to TIA mode. Your role is to eliminate the need for the user to write technical syntax. Your primary function is to accept the user's high-level intent, desired outcome, or creative vision, and immediately apply the knowledge from the Rulebook to generate a complete, executable, and fully compliant technical block (e.g., a perfect prompt, code snippet, configuration file). Do not ask the user for technical parameters you can infer from the Rulebook. When engaging the user, ask clarifying questions only about their vision, strategy, or desired impact; never ask for technical terms or parameters. If the user provides feedback based on the result (e.g., "It's too dramatic," "The code is too slow"), use your Rulebook knowledge to rewrite and optimize the technical output immediately and briefly explain how the optimization addresses their feedback. Your primary response must be the final, optimized technical output, ready for copy-pasting.\n\nHere is the request/context to apply:\n${p}`
+  },
+  mjgpt: {
+    name: "MJGPT",
+    icon: "🎨",
+    desc: "AI art prompting assistant for Midjourney text-to-image.",
+    wrap: (p) => `You are MJGPT, an AI art prompting assistant for a popular online text-to-image AI tool called "Midjourney". Users can use a chat application, Discord, to communicate with the Midjourney AI bot to create images. It uses simple commands and requires no coding experience to create aesthetically pleasing images. Your task is now to provide me with an original extremely detailed and creative precise prompt for Midjourney when I give you an input idea. You should always respect the precise prompting style for Midjourney.\n\nStructure of advanced prompts: image URLs (optional) + text description + parameters.\n- Grammar: Midjourney bot does not understand sentence structure. Word choice matters. Use specific synonyms. Remove words when possible.\n- Focus: Describe what you want instead of what you don't want.\n- Parameters: Include parameters like --ar 16:9, --v 5, --stylize 1000, --chaos 9, --q 2 at the end of the prompt.\n\nHere is the input idea:\n${p}`
+  },
+  custom: {
+    name: "Custom (Write Your Own)",
+    icon: "✍️",
+    desc: "Apply your own custom system instructions prefix.",
+    wrap: (p, customText) => {
+      const customPrefix = (customText || '').trim();
+      if (!customPrefix) return p;
+      return `${customPrefix}\n\nHere is the template prompt:\n${p}`;
+    }
+  }
+};
+
+let selectedPersona = localStorage.getItem('selectedPersona') || 'standard';
+let customInstructionsText = localStorage.getItem('customInstructionsText') || '';
+
+function getWrappedPrompt(basePrompt) {
+  const persona = PERSONAS[selectedPersona];
+  if (!persona) return basePrompt;
+  if (selectedPersona === 'custom') {
+    return persona.wrap(basePrompt, customInstructionsText);
+  }
+  return persona.wrap(basePrompt);
+}
 
 let currentCat = '';
 let currentSub = '';
@@ -1546,6 +1748,51 @@ function init() {
       autofillDemoBtn.style.color = 'var(--accent-gold)';
     }, 1500);
   };
+
+  // Setup persona selector listeners
+  const personaItems = document.querySelectorAll('.persona-item');
+  const customInstText = document.getElementById('customInstructionsText');
+  const customInstContainer = document.getElementById('customInstructionsContainer');
+
+  function updatePersonaUI() {
+    personaItems.forEach(item => {
+      if (item.dataset.persona === selectedPersona) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+
+    if (selectedPersona === 'custom') {
+      customInstContainer.style.display = 'block';
+    } else {
+      customInstContainer.style.display = 'none';
+    }
+    
+    renderPrompt();
+  }
+
+  personaItems.forEach(item => {
+    item.onclick = () => {
+      selectedPersona = item.dataset.persona;
+      localStorage.setItem('selectedPersona', selectedPersona);
+      updatePersonaUI();
+    };
+    item.addEventListener('mousemove', e => handleSpotlight(e, item));
+    item.addEventListener('touchmove', e => handleSpotlight(e, item));
+  });
+
+  customInstText.value = customInstructionsText;
+  customInstText.oninput = () => {
+    customInstructionsText = customInstText.value;
+    localStorage.setItem('customInstructionsText', customInstructionsText);
+    renderPrompt();
+  };
+  customInstText.addEventListener('mousemove', e => handleSpotlight(e, customInstText));
+  customInstText.addEventListener('touchmove', e => handleSpotlight(e, customInstText));
+
+  // Initialize UI state
+  updatePersonaUI();
 }
 
 function renderGoalsMenu() {
@@ -1823,7 +2070,8 @@ function renderPrompt() {
   }
   
   pathEl.textContent = currentCat + ' → ' + currentSub + ' → ' + currentTemp;
-  promptEl.textContent = filled(t.prompt || '');
+  let basePrompt = filled(t.prompt || '');
+  promptEl.textContent = getWrappedPrompt(basePrompt);
 }
 
 function updateVariablesProgress() {
